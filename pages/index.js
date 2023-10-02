@@ -23,10 +23,11 @@ async function getVersion() {
   return Math.random() * 100
 }
 
-export default function Home() {
+export default function Home(props) {
   const {data} = useQuery({
     queryKey: ["key"],
     queryFn: getVersion,
+    initialData: props.version
   })
   return (
     <div className={styles.container}>
