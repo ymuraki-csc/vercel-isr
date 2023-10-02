@@ -1,29 +1,31 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import {dehydrate, useQuery} from "@tanstack/react-query";
-import {queryClient} from "./_app";
+import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+const queryOptions = {
+  queryKey: ["key"],
+  queryFn: getVersion
+}
 
 export async function getStaticProps() {
+  await queryClient.prefetchQuery(queryOptions)
   return {
     props: {
-      data: await getVersion()
+      dehydratedState: dehydrate(queryClient),
     },
-    revalidate: 30
+    revalidate: 10
   }
 }
 
 async function getVersion() {
-  await new Promise(r => setTimeout(r, 10000))
+  await new Promise(r => setTimeout(r, 3000))
   return Math.random()
 }
 
 export default function Home(props) {
-  const {data} = useQuery({
-    queryKey: ["key"],
-    queryFn: getVersion,
-    initialData: props.data
-  })
+  const {data} = useQuery(queryOptions)
   return (
     <div className={styles.container}>
       <Head>
@@ -42,7 +44,7 @@ export default function Home(props) {
           <code className={styles.code}>pages/index.js</code>
         </p>
 
-        <p suppressHydrationWarning={true}>Generated value is {data}</p>
+        <p>Generated value is {data}</p>
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
