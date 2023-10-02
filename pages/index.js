@@ -14,13 +14,13 @@ export async function getStaticProps() {
     props: {
       dehydratedState: dehydrate(queryClient)
     },
-    revalidate: 5
+    revalidate: 30
   }
 }
 
 async function getVersion() {
   await new Promise(r => setTimeout(r, 10000))
-  return Math.random() * 100
+  return Math.random()
 }
 
 export default function Home(props) {
@@ -47,7 +47,7 @@ export default function Home(props) {
           <code className={styles.code}>pages/index.js</code>
         </p>
 
-        <p>This page is generated {data} times</p>
+        <p>Generated value is {data}</p>
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
