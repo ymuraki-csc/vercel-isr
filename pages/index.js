@@ -5,14 +5,9 @@ import {dehydrate, useQuery} from "@tanstack/react-query";
 import {queryClient} from "./_app";
 
 export async function getStaticProps() {
-  await queryClient.prefetchQuery({
-    queryKey: ["key"],
-    queryFn: getVersion
-  })
-
   return {
     props: {
-      dehydratedState: dehydrate(queryClient)
+      data: await getVersion()
     },
     revalidate: 30
   }
@@ -27,7 +22,7 @@ export default function Home(props) {
   const {data} = useQuery({
     queryKey: ["key"],
     queryFn: getVersion,
-    initialData: props.version
+    initialData: props.data
   })
   return (
     <div className={styles.container}>
@@ -47,7 +42,7 @@ export default function Home(props) {
           <code className={styles.code}>pages/index.js</code>
         </p>
 
-        <p>Generated value is {data}</p>
+        <p suppressHydrationWarning={true}>Generated value is {data}</p>
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
