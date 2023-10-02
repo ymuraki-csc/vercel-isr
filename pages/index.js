@@ -1,8 +1,33 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import {dehydrate, useQuery} from "@tanstack/react-query";
+import {queryClient} from "./_app";
+
+export async function getStaticProps() {
+  await queryClient.prefetchQuery({
+    queryKey: ["key"],
+    queryFn: getVersion
+  })
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    },
+    revalidate: 5
+  }
+}
+
+async function getVersion() {
+  await new Promise(r => setTimeout(r, 10000))
+  return Math.random() * 100
+}
 
 export default function Home() {
+  const {data} = useQuery({
+    queryKey: ["key"],
+    queryFn: getVersion,
+  })
   return (
     <div className={styles.container}>
       <Head>
@@ -20,6 +45,8 @@ export default function Home() {
           Get started by editing{' '}
           <code className={styles.code}>pages/index.js</code>
         </p>
+
+        <p>This page is generated {data} times</p>
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
