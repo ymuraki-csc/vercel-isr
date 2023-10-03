@@ -1,31 +1,20 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
-const queryOptions = {
-  queryKey: ["key"],
-  queryFn: getVersion
-}
-
-export async function getStaticProps() {
-  await queryClient.prefetchQuery(queryOptions)
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-    revalidate: 10
-  }
-}
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 
 async function getVersion() {
   await new Promise(r => setTimeout(r, 3000))
   return Math.random()
 }
 
-export default function Home(props) {
-  const {data} = useQuery(queryOptions)
+export default function Home() {
+  const queryClient = useQueryClient();
+  const {data} = useQuery({
+    queryKey: ["key"],
+    queryFn: getVersion,
+    initialData: () => queryClient.getQueryData(["key"])
+  })
   return (
     <div className={styles.container}>
       <Head>
